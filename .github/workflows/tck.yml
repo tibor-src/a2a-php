@@ -1,0 +1,73 @@
+name: TCK
+
+on: ['push', 'pull_request']
+
+permissions:
+  contents: read
+
+jobs:
+  tck:
+    runs-on: ubuntu-latest
+
+    name: A2A TCK JSON-RPC and HTTP+JSON
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+      with:
+        php-version: 8.5
+        extensions: dom, mbstring, zip
+        coverage: none
+
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install Composer dependencies
+      run: composer update --prefer-stable --no-interaction --prefer-dist
+
+    - name: Start example server
+      env:
+        PHP_CLI_SERVER_WORKERS: 4
+      run: php -S 127.0.0.1:9999 examples/server.php > /tmp/a2a-php-server.log 2>&1 &
+
+    - name: Wait for server
+      run: |
+        for i in $(seq 1 30); do
+          if curl -fsS http://127.0.0.1:9999/.well-known/agent-card.json >/dev/null; then
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "Server failed to start"
+        cat /tmp/a2a-php-server.log
+        exit 1
+
+    - name: Clone TCK
+      run: git clone --depth 1 https://github.com/a2aproject/a2a-tck.git /tmp/a2a-tck
+
+    - name: Install TCK
+      working-directory: /tmp/a2a-tck
+      run: uv venv --allow-existing && uv pip install -e .
+
+    - name: Run TCK MUST and SHOULD
+      working-directory: /tmp/a2a-tck
+      run: |
+        uv run ./run_tck.py --sut-host http://127.0.0.1:9999 --transport jsonrpc,http_json --level must
+        uv run ./run_tck.py --sut-host http://127.0.0.1:9999 --transport jsonrpc,http_json --level should
+
+    - name: Upload TCK reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: tck-reports
+        path: /tmp/a2a-tck/reports
+        if-no-files-found: ignore

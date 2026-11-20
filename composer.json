@@ -1,0 +1,81 @@
+{
+    "name": "tibor-src/a2a-php",
+    "description": "PHP SDK for the Agent2Agent (A2A) protocol",
+    "keywords": ["php", "a2a", "agent2agent", "sdk", "agents"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tibor",
+            "homepage": "https://github.com/tibor-src"
+        }
+    ],
+    "require": {
+        "php": "^8.5.0",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "php-http/discovery": "^1.20",
+        "psr/http-client": "^1.0",
+        "psr/http-factory": "^1.1",
+        "psr/http-message": "^2.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/log": "^3.0"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^7.9",
+        "laravel/pint": "^1.29.3",
+        "nyholm/psr7": "^1.8",
+        "nyholm/psr7-server": "^1.1",
+        "pestphp/pest": "^5.0.0",
+        "pestphp/pest-plugin-phpstan": "^5.0.0",
+        "pestphp/pest-plugin-rector": "^5.0.0",
+        "pestphp/pest-plugin-type-coverage": "^5.0.0",
+        "phpstan/phpstan": "^2.2.5",
+        "rector/rector": "^2.5.7",
+        "symfony/var-dumper": "^8.1.1"
+    },
+    "suggest": {
+        "grpc/grpc": "Enable the optional gRPC protocol binding (not implemented in v0.1.0)",
+        "google/protobuf": "Protocol Buffer runtime for the optional gRPC binding"
+    },
+    "autoload": {
+        "psr-4": {
+            "TiborSrc\\A2A\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "scripts": {
+        "lint": [
+            "pint --parallel",
+            "rector"
+        ],
+        "refactor": "rector",
+        "test:type-coverage": "pest --type-coverage --min=100",
+        "test:lint": [
+            "pint --parallel --test",
+            "rector --dry-run"
+        ],
+        "test:refactor": "rector --dry-run",
+        "test:unit": "pest --parallel --coverage --exactly=100",
+        "test:types": "phpstan",
+        "test:tck": "php scripts/tck.php",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:unit"
+        ]
+    }
+}
