@@ -5,7 +5,7 @@ declare(strict_types=1);
 $root = dirname(__DIR__);
 $log = '/tmp/a2a-php-server.log';
 $pid = (int) trim((string) shell_exec(
-    'PHP_CLI_SERVER_WORKERS=4 php -S 127.0.0.1:9999 '.escapeshellarg($root.'/examples/server.php').' > '.escapeshellarg($log).' 2>&1 & echo $!',
+    'PHP_CLI_SERVER_WORKERS=16 php -S 127.0.0.1:9999 '.escapeshellarg($root.'/examples/server.php').' > '.escapeshellarg($log).' 2>&1 & echo $!',
 ));
 
 if ($pid < 1) {

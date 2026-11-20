@@ -207,9 +207,10 @@ final readonly class RequestHandler
 
     /**
      * @param  (callable(StreamResponse): void)|null  $onEvent
+     * @param  (callable(): bool)|null  $isActive
      * @return list<StreamResponse>
      */
-    public function subscribeToTask(SubscribeToTaskRequest $request, ?callable $onEvent = null): array
+    public function subscribeToTask(SubscribeToTaskRequest $request, ?callable $onEvent = null, ?callable $isActive = null): array
     {
         $this->assertStreaming(true);
         $task = $this->requireTask($request->id);
@@ -232,6 +233,10 @@ final readonly class RequestHandler
         $push(StreamResponse::fromEvent($task));
 
         while (time() <= $deadline) {
+            if ($isActive !== null && $isActive() === false) {
+                break;
+            }
+
             $current = $this->requireTask($request->id);
 
             if ($current->status->state !== $lastState) {

@@ -182,7 +182,7 @@ final readonly class FileTaskStore implements TaskStore
         }
 
         try {
-            flock($handle, LOCK_EX);
+            flock($handle, LOCK_SH);
             $contents = stream_get_contents($handle);
 
             return $this->decodeState(

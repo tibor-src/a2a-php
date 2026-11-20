@@ -493,7 +493,15 @@ it('covers request handler branches and exception details', function (): void {
     expect($full->subscribeToTask(new SubscribeToTaskRequest($task->id), function () use (&$seen): void {
         $seen++;
     }))->not->toBeEmpty()
-        ->and($seen)->toBeGreaterThan(0)
+        ->and($seen)->toBeGreaterThan(0);
+
+    $activeCalls = 0;
+    expect($full->subscribeToTask(new SubscribeToTaskRequest($task->id), isActive: function () use (&$activeCalls): bool {
+        $activeCalls++;
+
+        return false;
+    }))->toHaveCount(1)
+        ->and($activeCalls)->toBeGreaterThan(0)
         ->and($full->cancelTask(new CancelTaskRequest($task->id))->status->state)->toBe(TaskState::Canceled)
         ->and(fn (): array => $full->subscribeToTask(new SubscribeToTaskRequest($task->id)))->toThrow(UnsupportedOperationException::class);
 

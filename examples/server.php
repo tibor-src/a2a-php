@@ -127,6 +127,11 @@ function streamSubscribe(RequestHandler $handler, ServerRequestInterface $reques
 
             echo 'data: '.json_encode($data, JSON_THROW_ON_ERROR)."\n\n";
             flush();
+        }, static function (): bool {
+            echo ": \n\n";
+            flush();
+
+            return connection_aborted() === 0;
         });
     } catch (A2AException) {
         return $started;
