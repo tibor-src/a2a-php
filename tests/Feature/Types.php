@@ -143,5 +143,5 @@ it('parses send-message configuration and list responses', function (): void {
     ]);
 
     expect($finalUpdate->final)->toBeTrue()
-        ->and(array_key_exists('final', $finalUpdate->toArray()))->toBeFalse();
+        ->and($finalUpdate->toArray())->not->toHaveKey('final');
 });

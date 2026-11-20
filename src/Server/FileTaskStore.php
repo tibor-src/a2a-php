@@ -175,11 +175,7 @@ final readonly class FileTaskStore implements TaskStore
      */
     private function read(): array
     {
-        if (! is_file($this->path)) {
-            return $this->emptyState();
-        }
-
-        $handle = fopen($this->path, 'r');
+        $handle = is_file($this->path) ? fopen($this->path, 'r') : false;
 
         if ($handle === false) {
             return $this->emptyState();
