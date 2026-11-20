@@ -21,7 +21,7 @@
         "psr/log": "^3.0"
     },
     "require-dev": {
-        "guzzlehttp/guzzle": "^7.9",
+        "guzzlehttp/guzzle": "^8.5",
         "laravel/pint": "^1.29.3",
         "nyholm/psr7": "^1.8",
         "nyholm/psr7-server": "^1.1",
